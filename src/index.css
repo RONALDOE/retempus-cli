@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+#login {
+  position: relative;
+  background-image: url("./assets/loginbg.svg");
+  background-size: cover;
+  background-position: center;
+}
+
+#login::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Oscurece el fondo */
+  z-index: 1;
+}
+
+#login > * {
+  position: relative;
+  z-index: 2; /* Para que el contenido esté encima del overlay */
+}
+
+@layer base {
+  :root {
+    --radius: 0.5rem;
+  }
+}
