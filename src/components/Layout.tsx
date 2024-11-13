@@ -72,7 +72,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         {/* Toggle Button */}
         <button
           onClick={toggleSidebar}
-          className="absolute bottom-1z  left-1/2 transform -translate-x-1/2 text-white bg-[#444444] hover:bg-[#555555] w-8 h-8  rounded-full"
+          className="absolute bottom-1  left-1/2 transform -translate-x-1/2 text-white bg-[#444444] hover:bg-[#555555] w-8 h-8  rounded-full"
         >
           {isSidebarOpen ? (
             <FontAwesomeIcon icon={faChevronLeft}></FontAwesomeIcon>
