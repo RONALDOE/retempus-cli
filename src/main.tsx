@@ -7,26 +7,35 @@ import {
 } from "react-router-dom";
 import Login from "@pages/Login";
 import LandingPage from "@pages/LandingPage";
+import Layout from "@components/Layout";
+import Dashboard  from "@pages/Dashboard"; // Importa MainPage si lo tienes.
+
 const router = createBrowserRouter([
-  {
-    path: "/*",
-    element: <div>Hello world!</div>,
-    
-  },
-  {
-    path: "/login",
-    element: <Login/>,
-    
-  },
+  // Ruta principal que usará Layout
   {
     path: "/",
-    element: <LandingPage/>,
-    
+    element: (
+      <LandingPage />
+    ),
+  },
+  
+  // Rutas que no usan Layout
+  {
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "/dashboard",
+    element:
+    <Layout>
+
+    <Dashboard />
+    </Layout>
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-        <RouterProvider router={router} />
-  </React.StrictMode>,
+    <RouterProvider router={router} />
+  </React.StrictMode>
 );

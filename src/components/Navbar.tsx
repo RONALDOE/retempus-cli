@@ -8,53 +8,44 @@ interface NavbarProps {
 
 export default function Navbar({ items }: NavbarProps) {
   return (
-    <nav className="w-screen h-20 bg-blue-600 flex items-center justify-between px-8 shadow-lg">
-      {/* Logo */}
+    <nav className="w-full h-20 bg-[#121212] flex items-center justify-between px-8 shadow-lg">
+      {/* Logo y título */}
       <div className="flex items-center">
-        <img src={Logo} alt="Retempus Logo" className="w-16 h-16 mr-4" />
-        <h1 className="text-white text-2xl font-bold">Retempus</h1>
+        <img src={Logo} alt="Retempus Logo" className="w-12 h-12 mr-2" />
+        <h1 className="text-white text-2xl font-semibold">Retempus</h1>
       </div>
 
       {/* Enlaces de navegación */}
-      <div className="flex items-center space-x-8">
-        {items.map((item, key) => {
-          const isLastItem = key === items.length - 1;
-
-          return isLastItem ? (
-            <div 
-              key={key} 
-              className="flex items-center justify-center w-12 h-12 bg-white text-blue-600 rounded px-8 font-medium text-lg hover:bg-gray-100 transition duration-300"
+      <div className="flex items-center space-x-6 px-8 py-2 rounded-full bg-[#333333]">
+        {items.map((item, index) => (
+          item.link.startsWith("#") ? (
+            <a
+              href={item.link}
+              key={index}
+              className="text-white text-lg font-medium  px-3 rounded-full hover:bg-[#555555] transition-all duration-200"
             >
-              {item.link.startsWith("#") ? (
-                <a href={item.link} className="text-center">
-                  {item.name}
-                </a>
-              ) : (
-                <Link to={item.link} className="text-center">
-                  {item.name}
-                </Link>
-              )}
-            </div>
+              {item.name}
+            </a>
           ) : (
-            item.link.startsWith("#") ? (
-              <a 
-                href={item.link} 
-                key={key} 
-                className="text-white text-lg font-medium hover:text-blue-300 transition duration-300"
-              >
-                {item.name}
-              </a>
-            ) : (
-              <Link 
-                to={item.link} 
-                key={key} 
-                className="text-white text-lg font-medium hover:text-blue-300 transition duration-300"
-              >
-                {item.name}
-              </Link>
-            )
-          );
-        })}
+            <Link
+              to={item.link}
+              key={index}
+              className="text-white text-lg font-medium hover:text-[#dcdcdc] transition-colors duration-200"
+            >
+              {item.name}
+            </Link>
+          )
+        ))}
+      </div>
+
+      {/* Botón de acceso */}
+      <div>
+        <Link
+          to="login"
+          className="bg-[#444444] text-white text-lg font-bold py-2 px-6 rounded-full hover:bg-[#555555] transform hover:scale-105 transition-transform duration-200"
+        >
+          Get Into The Power
+        </Link>
       </div>
     </nav>
   );
