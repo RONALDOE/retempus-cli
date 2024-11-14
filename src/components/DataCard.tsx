@@ -1,9 +1,8 @@
-import React from "react";
 import ProgressBar from "./ProgressBar";
-
+//shadow-[0px_0px_31px_-1px_rgba(255,255,255,_0.5)]
 export default function DataCard() {
   return (
-    <div className='min-w-80 min-h-max p-4 flex flex-col bg-[white] rounded-lg hover:scale-105 transition-all shadow-[0px_0px_31px_-1px_rgba(255,255,255,_0.5)]  '>
+    <div className='w-1/3 min-h-max p-4 flex flex-col bg-[white] rounded-lg hover:scale-105 transition-all   '>
       <div className='w-full h-24'>
         <img src='' alt='' className='h-full w-24 bg-black' />
       </div>

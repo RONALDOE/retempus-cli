@@ -49,7 +49,7 @@ function Login() {
               className='absolute inset-y-0 right-0 px-4 flex items-center justify-center bg-[#121212] rounded-r-lg text-white font-semibold hover:bg-[#1a1a1a] transition duration-300'
                 onClick={() => setIsPasswordVisible(!isPasswordVisible)}
             >
-              Ver
+              Show
             </button>
           </div>
         </div>
