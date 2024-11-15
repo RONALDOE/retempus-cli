@@ -9,13 +9,23 @@ import Login from "@pages/Login";
 import LandingPage from "@pages/LandingPage";
 import Layout from "@components/Layout";
 import Dashboard  from "@pages/Dashboard"; // Importa MainPage si lo tienes.
-
+import Search from "@pages/Search";
 const router = createBrowserRouter([
   // Ruta principal que usará Layout
   {
     path: "/",
     element: (
       <LandingPage />
+    ),
+  },
+  {
+    path: "/search/:fileType",	
+    element: (
+    <Layout>
+
+      <Search />
+      </Layout>
+
     ),
   },
   
