@@ -12,6 +12,7 @@
       "@utils/*": ["utils/*"],
       "@pages/*": ["pages/*"],
       "@assets/*": ["assets/*"],
+      "@contexts/*": ["contexts/*"],
     },
 
     /* Bundler mode */

@@ -4,6 +4,7 @@ import Shortcut from "@components/Shortcut";
 import UserCard from "@components/UserCard";
 import TotalSpaceCard from "@components/TotalSpaceCard";
 
+
 const shortcuts = [
 
   {
@@ -67,6 +68,7 @@ const spaceData = [
 ];
 
 export default function Dashboard() {
+  console.log
     return (
       <div className="bg-[#121212] w-full h-full grid grid-cols-7 grid-rows-7 gap-4 p-6">
         {/* Contenedor de DataCards, ajustado al grid proporcionado */}

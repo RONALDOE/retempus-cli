@@ -1,9 +1,19 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 import { Link } from 'react-router-dom'
+import { AuthContext } from '@contexts/auth.context'
 
 function Login() {
+ 
+  // Contexto de autenticación
+  const authContext = useContext(AuthContext)
+  
+  if (!authContext) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
+
+  const {login} = authContext
   // Estado para el usuario
-  const [user, setUser] = useState<string>('')
+  const [usernameOrEmail, setUsernameOrEmail] = useState<string>('')
   // Estado para la contraseña
   const [password, setPassword] = useState<string>('')
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false)
@@ -27,8 +37,8 @@ function Login() {
             type="text" 
             name="Username" 
             id="username" 
-            value={user}
-            onChange={(e) => setUser(e.target.value)}
+            value={usernameOrEmail}
+            onChange={(e) => setUsernameOrEmail(e.target.value)}
             className='w-full px-4 py-2 rounded-lg text-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400'
           />
         </div>
@@ -55,7 +65,7 @@ function Login() {
         </div>
 
         {/* Botón de Iniciar Sesión */}
-        <button className='mt-6  w-11/12 py-3 bg-[#121212] text-white rounded-lg text-lg font-semibold hover:bg-[#1a1a1a] transition duration-300 ease-in-out'>
+        <button onClick={()=>login({ usernameOrEmail, password})} className='mt-6  w-11/12 py-3 bg-[#121212] text-white rounded-lg text-lg font-semibold hover:bg-[#1a1a1a] transition duration-300 ease-in-out'>
           Log In
         </button>
 
