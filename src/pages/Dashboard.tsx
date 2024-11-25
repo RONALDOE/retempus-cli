@@ -1,9 +1,9 @@
-import DataCard from "@components/DataCard";
-import RecentFiles from "@components/RecentFiles";
-import Shortcut from "@components/Shortcut";
-import UserCard from "@components/UserCard";
-import TotalSpaceCard from "@components/TotalSpaceCard";
-
+import DataCard from "@components/DashboardUtilities/DataCard";
+import RecentFiles from "@components/DashboardUtilities/RecentFiles";
+import Shortcut from "@components/DashboardUtilities/Shortcut";
+import UserCard from "@components/DashboardUtilities/UserCard";
+import TotalSpaceCard from "@components/DashboardUtilities/TotalSpaceCard";
+import DataCardsWrapper from "@components/DashboardUtilities/DataCardsWrapper";
 
 const shortcuts = [
 
@@ -67,16 +67,14 @@ const spaceData = [
   // Agrega más objetos si es necesario
 ];
 
+
+
 export default function Dashboard() {
-  console.log
     return (
       <div className="bg-[#121212] w-full h-full grid grid-cols-7 grid-rows-7 gap-4 p-6">
         {/* Contenedor de DataCards, ajustado al grid proporcionado */}
-        <div className="col-span-4 row-span-2 col-start-2 row-start-1 flex flex-row gap-6 items-center justify-center">
-          <DataCard />
-          <DataCard />
-          <DataCard />
-        </div>
+        <DataCardsWrapper/>
+
   
         {/* Data Analysis*/}
         <div className="col-span-2 row-span-7 col-start-6 row-start-1 bg-white rounded-lg p-8">

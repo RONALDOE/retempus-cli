@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import Logo from "@assets/RetempusLogo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { AuthContext } from "@contexts/auth.context";
 import { faHome, faInfoCircle, faCogs, faEnvelope, faChevronLeft, faChevronRight, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 
 interface SidebarItem {
@@ -24,6 +25,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const authContext = useContext(AuthContext);
+
+  const { logout } = authContext || {};
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
@@ -54,10 +58,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </li>
           ))}
         </ul>
-        {/* Toggle Button */}
+        {/* Logout Button */}
         <div className="flex justify-center mb-6">
           <button
-            onClick={toggleSidebar}
+            onClick={logout}
             className="text-white bg-[#444444] hover:bg-[#ec3f3f] transition-colors p-3 rounded-full"
           >
             {isSidebarOpen ? (

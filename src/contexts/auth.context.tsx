@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode"; // Instala esta librería: npm install jwt-decode
+import {jwtDecode} from "jwt-decode"; // Instala esta librería: npm install jwt-decode
 
 // Tipos para el estado de autenticación y las funciones
 interface AuthState {
@@ -10,9 +10,10 @@ interface AuthState {
 }
 
 interface User {
-  id: string;
-  name: string;
+  userId: string;
+  username: string;
   email: string;
+  name: string;
 }
 
 interface RegisterCredentials {
@@ -27,8 +28,8 @@ interface AuthContextType {
   login: (credentials: LoginCredentials) => Promise<boolean>;
   logout: () => void;
   register: (credentials: RegisterCredentials) => Promise<boolean>;
-  recover: (email: string) => Promise<{ status: number, message?: string }>
-  reset: (token: string, newPassword: string) => Promise<{ status: number, message?: string }>
+  recover: (email: string) => Promise<{ status: number; message?: string }>;
+  reset: (token: string, newPassword: string) => Promise<{ status: number; message?: string }>;
   loading: boolean;
 }
 
@@ -41,7 +42,6 @@ interface LoginCredentials {
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const backend = import.meta.env.VITE_BACKEND_URL;
-console.log(backend)
 
 // Proveedor del contexto
 interface AuthProviderProps {
@@ -54,6 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     token: null,
     user: null,
   });
+
   const [loading, setLoading] = useState<boolean>(true);
 
   // Función para decodificar el token JWT
@@ -62,31 +63,61 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const decoded: any = jwtDecode(token); // Decodifica el token JWT
       return {
-        id: decoded.id || decoded.sub, // `sub` es común en tokens JWT estándar
-        name: decoded.name || "",
-        email: decoded.email || "",
+        userId: decoded.user.userId || decoded.sub,
+        username: decoded.user.username || "",
+        email: decoded.user.email || "",
+        name: decoded.user.name || "",
       };
     } catch (error) {
       console.error("Error decoding token:", error);
-      return { id: "", name: "", email: "" };
+      return { userId: "", username: "", email: "", name: "" };
+    }
+  };
+
+  // Función para obtener nuevos tokens de acceso y guardarlos
+  const fetchAccessTokens = async (userId: string): Promise<void> => {
+    try {
+      const response = await axios.get(`${backend}/gauth/get-refresh-tokens`, {
+        params: { userId },
+      });
+      console.log((response.data.refreshTokens));
+
+      const refreshTokens: string[] = response.data.refreshTokens;
+
+      if (!refreshTokens.length) {
+        console.error("No se encontraron refreshTokens para este usuario.");
+        return;
+      }
+
+      const tokensArray = [];
+
+      for (const refreshToken of refreshTokens) {
+        const tokenResponse = await axios.get(`${backend}/gauth/validate-token?userId=${userId}&actualAccessToken=${""}&refreshToken=${refreshToken}`);
+
+        if (tokenResponse.status === 200) {
+          const { accessToken } = tokenResponse.data;
+          tokensArray.push({ refresh: refreshToken, access: accessToken });
+        }
+      }
+
+      localStorage.setItem("tokens", JSON.stringify(tokensArray)); // Guarda los tokens en localStorage
+    } catch (error) {
+      console.error("Error al obtener nuevos accessTokens:", error);
     }
   };
 
   // Función para iniciar sesión
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
-    console.log(backend)
     try {
-      console.log(credentials)
+      
       const response = await axios.post(`${backend}/auth/login`, {
         usernameOrEmail: credentials.usernameOrEmail,
         password: credentials.password,
       });
-      const { token } = response.data;
 
-      // Decodificar el token para obtener los datos del usuario
+      const { token } = response.data;
       const user = decodeToken(token);
 
-      // Guardar el token y los datos del usuario en el estado y localStorage
       setAuth({
         isAuthenticated: true,
         token,
@@ -94,12 +125,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
       localStorage.setItem("token", token);
 
-      console.log("Login exitoso:", user);
+      // Obtén los nuevos tokens de acceso después de iniciar sesión
+      console.log("Obteniendo nuevos tokens de acceso...");
+      await fetchAccessTokens(user.userId);
+      console.log("Tokens de acceso obtenidos.");
+      window.location.replace("http://localhost:3000/dashboard");
 
-      return true; // Login exitoso
+      return true;
     } catch (error) {
       console.error("Error durante el login:", error);
-      return false; // Login fallido
+      return false;
     }
   };
 
@@ -114,7 +149,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
 
     try {
-      // Decodificar el token para obtener los datos del usuario
       const user = decodeToken(storedToken);
 
       setAuth({
@@ -124,8 +158,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       });
     } catch (error) {
       console.error("Error verificando el token:", error);
-
-      // Si el token no es válido, eliminarlo
       setAuth({ isAuthenticated: false, token: null, user: null });
       localStorage.removeItem("token");
     } finally {
@@ -137,6 +169,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logout = (): void => {
     setAuth({ isAuthenticated: false, token: null, user: null });
     localStorage.removeItem("token");
+    localStorage.removeItem("tokens"); // Limpia los tokens de Google
+  };
+
+  // Función de registro
+  const register = async (credentials: RegisterCredentials): Promise<boolean> => {
+    try {
+      const response = await axios.post(`${backend}/auth/register`, credentials);
+      if (response.status === 201) {
+        window.location.replace("http://localhost:3000/login");
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error durante el registro:", error);
+      return false;
+    }
+  };
+
+  // Función para recuperación de contraseña
+  const recover = async (email: string): Promise<{ status: number; message?: string }> => {
+    try {
+      const response = await axios.post(`${backend}/auth/forgot-password`, { email });
+      if (response.status === 200) {
+        return { status: 200, message: "Correo de recuperación enviado exitosamente." };
+      }
+      return { status: response.status, message: "No se encontró el correo electrónico." };
+    } catch (error) {
+      console.error("Error durante la recuperación de contraseña:", error);
+      return { status: 0, message: "Error inesperado. Por favor, inténtalo de nuevo." };
+    }
+  };
+
+  // Función para reiniciar la contraseña
+  const reset = async (token: string, newPassword: string): Promise<{ status: number; message?: string }> => {
+    try {
+      const response = await axios.post(`${backend}/auth/reset-password`, { token, newPassword });
+      if (response.status === 200) {
+        window.location.replace("http://localhost:3000/login");
+        return { status: 200, message: "Contraseña cambiada exitosamente." };
+      }
+      return { status: response.status, message: "Error inesperado. Por favor, inténtalo de nuevo." };
+    } catch (error) {
+      console.error("Error durante el reinicio de contraseña:", error);
+      return { status: 0, message: "Error inesperado. Por favor, inténtalo de nuevo." };
+    }
   };
 
   // Verificar el token al cargar la aplicación
@@ -144,74 +221,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     verifyToken();
   }, []);
 
-  const reset = async (token: string, newPassword: string): Promise<{ status: number; message?: string }> => {
-    try {
-      console.log(`${backend}/auth/reset-password`)
-      const response = await axios.post(`${backend}/auth/reset-password`, { token, newPassword });
-
-      if (response.status === 200) {
-        return { status: 200, message: 'Contraseña cambiada exitosamente.' };
-      }
-
-      if (response.status === 400) {
-        return { status: 400, message: 'Token y contraseña han de ser validos' };
-      }
-
-      return { status: response.status, message: 'Unexpected error occurred. Please try again later.' };
-    } catch (error) {
-      console.error('Error during password recovery: ', error);
-      return { status: 0, message: 'Unexpected error occurred. Please try again later.' };
-
-    }
-  }
-
-  const recover = async (email: string): Promise<{ status: number; message?: string }> => {
-    try {
-      const response = await axios.post(`${backend}/auth/forgot-password`, { email });
-
-      if (response.status === 200) {
-        return { status: 200, message: 'Password recovery email sent successfully.' };
-      }
-
-      if (response.status === 404) {
-        return { status: 404, message: 'Email not found. Please check and try again.' };
-      }
-
-      return { status: response.status, message: 'Unexpected error occurred. Please try again later.' };
-
-    } catch (error) {
-      console.error('Error during password recovery: ', error);
-      return { status: 0, message: 'Unexpected error occurred. Please try again later.' };
-
-    }
-  };
-
-  // Función de registro
-  const register = async (credentials: RegisterCredentials): Promise<boolean> => {
-    try {
-      const response = await axios.post(`${backend}/auth/register`, {
-        username: credentials.username,
-        email: credentials.email,
-        password: credentials.password,
-        name: credentials.name,
-      });
-
-      if (response.status === 201) {
-        window.location.replace('http://localhost:3000/login')
-      }
-
-
-      console.log("Registro exitoso:");
-
-      return true; // Registro exitoso
-    } catch (error) {
-      console.error("Error durante el registro:", error);
-      return false; // Registro fallido
-    }
-  };
-
   return (
-    <AuthContext.Provider value={{ auth, login, logout, register, loading, recover, reset }}>
+    <AuthContext.Provider value={{ auth, login, logout, register, recover, reset, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

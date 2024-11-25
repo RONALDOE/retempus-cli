@@ -3,3 +3,10 @@ export interface IUser {
     username: string;
     email: string;
 }
+
+interface IConnection {
+    email: string;
+    refreshToken: string;
+    connectedAt: string;
+  }
+  

@@ -14,6 +14,8 @@ import Search from "@pages/Search";
 import Register from "@pages/Register"
 import Forgot from '@pages/Forgot'
 import Reset from '@pages/Reset'
+import ProtectedRoute from "@components/ProtectedRoute";
+import { GoogleAuthProvider } from "@contexts/gauth.context";
 const router = createBrowserRouter([
   // Ruta principal que usará Layout
   {
@@ -52,17 +54,21 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element:
-    <Layout>
+    <ProtectedRoute>
 
+    <Layout>
     <Dashboard />
     </Layout>
+    </ProtectedRoute>
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
+    <GoogleAuthProvider>	
     <AuthProvider>
     <RouterProvider router={router} />
     </AuthProvider>
+    </GoogleAuthProvider>	
   </React.StrictMode>
 );

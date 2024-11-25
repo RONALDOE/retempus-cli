@@ -68,6 +68,7 @@ function Login() {
             name="Username" 
             id="username" 
             value={usernameOrEmail}
+            tabIndex={-1}
             onChange={(e) => setUsernameOrEmail(e.target.value)}
             className='w-full px-4 py-2 rounded-lg text-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400'
           />
@@ -83,6 +84,8 @@ function Login() {
               type={isPasswordVisible ? "text" : "password"} 
               name="Password" 
               id="password" 
+            tabIndex={0}
+
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className='w-full px-4 py-2 pr-12 rounded-lg text-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400'
@@ -101,6 +104,8 @@ function Login() {
         {/* Botón de Iniciar Sesión */}
         <button 
           onClick={handleLogin} 
+          tabIndex={1}
+
           className='mt-6  w-11/12 py-3 bg-[#121212] text-white rounded-lg text-lg font-semibold hover:bg-[#1a1a1a] transition duration-300 ease-in-out'
         >
           Log In
