@@ -4,7 +4,7 @@
 
 
 
-#login {
+#login, #register, #forgot {
   position: relative;
   background-image: url("./assets/loginbg.svg");
   background-size: cover;

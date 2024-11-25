@@ -1,6 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from "react";
 import axios from "axios";
-import {jwtDecode} from "jwt-decode"; // Instala esta librería: npm install jwt-decode
+import { jwtDecode } from "jwt-decode"; // Instala esta librería: npm install jwt-decode
 
 // Tipos para el estado de autenticación y las funciones
 interface AuthState {
@@ -15,10 +15,20 @@ interface User {
   email: string;
 }
 
+interface RegisterCredentials {
+  username: string;
+  email: string;
+  password: string;
+  name: string;
+}
+
 interface AuthContextType {
   auth: AuthState;
   login: (credentials: LoginCredentials) => Promise<boolean>;
   logout: () => void;
+  register: (credentials: RegisterCredentials) => Promise<boolean>;
+  recover: (email: string) => Promise<{ status: number, message?: string }>
+  reset: (token: string, newPassword: string) => Promise<{ status: number, message?: string }>
   loading: boolean;
 }
 
@@ -64,8 +74,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Función para iniciar sesión
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
+    console.log(backend)
     try {
-        console.log(credentials)
+      console.log(credentials)
       const response = await axios.post(`${backend}/auth/login`, {
         usernameOrEmail: credentials.usernameOrEmail,
         password: credentials.password,
@@ -133,8 +144,74 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     verifyToken();
   }, []);
 
+  const reset = async (token: string, newPassword: string): Promise<{ status: number; message?: string }> => {
+    try {
+      console.log(`${backend}/auth/reset-password`)
+      const response = await axios.post(`${backend}/auth/reset-password`, { token, newPassword });
+
+      if (response.status === 200) {
+        return { status: 200, message: 'Contraseña cambiada exitosamente.' };
+      }
+
+      if (response.status === 400) {
+        return { status: 400, message: 'Token y contraseña han de ser validos' };
+      }
+
+      return { status: response.status, message: 'Unexpected error occurred. Please try again later.' };
+    } catch (error) {
+      console.error('Error during password recovery: ', error);
+      return { status: 0, message: 'Unexpected error occurred. Please try again later.' };
+
+    }
+  }
+
+  const recover = async (email: string): Promise<{ status: number; message?: string }> => {
+    try {
+      const response = await axios.post(`${backend}/auth/forgot-password`, { email });
+
+      if (response.status === 200) {
+        return { status: 200, message: 'Password recovery email sent successfully.' };
+      }
+
+      if (response.status === 404) {
+        return { status: 404, message: 'Email not found. Please check and try again.' };
+      }
+
+      return { status: response.status, message: 'Unexpected error occurred. Please try again later.' };
+
+    } catch (error) {
+      console.error('Error during password recovery: ', error);
+      return { status: 0, message: 'Unexpected error occurred. Please try again later.' };
+
+    }
+  };
+
+  // Función de registro
+  const register = async (credentials: RegisterCredentials): Promise<boolean> => {
+    try {
+      const response = await axios.post(`${backend}/auth/register`, {
+        username: credentials.username,
+        email: credentials.email,
+        password: credentials.password,
+        name: credentials.name,
+      });
+
+      if (response.status === 201) {
+        window.location.replace('http://localhost:3000/login')
+      }
+
+
+      console.log("Registro exitoso:");
+
+      return true; // Registro exitoso
+    } catch (error) {
+      console.error("Error durante el registro:", error);
+      return false; // Registro fallido
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ auth, login, logout, loading }}>
+    <AuthContext.Provider value={{ auth, login, logout, register, loading, recover, reset }}>
       {!loading && children}
     </AuthContext.Provider>
   );

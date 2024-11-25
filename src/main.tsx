@@ -11,6 +11,9 @@ import LandingPage from "@pages/LandingPage";
 import Layout from "@components/Layout";
 import Dashboard  from "@pages/Dashboard"; // Importa MainPage si lo tienes.
 import Search from "@pages/Search";
+import Register from "@pages/Register"
+import Forgot from '@pages/Forgot'
+import Reset from '@pages/Reset'
 const router = createBrowserRouter([
   // Ruta principal que usará Layout
   {
@@ -34,6 +37,17 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+  },
+  {
+    path: "/forgot",
+    element: <Forgot />,
+  },{
+    path: "/reset/:token",
+    element: <Reset />,
   },
   {
     path: "/dashboard",
