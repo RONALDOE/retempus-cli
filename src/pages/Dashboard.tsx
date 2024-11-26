@@ -1,10 +1,12 @@
-import DataCard from "@components/DashboardUtilities/DataCard";
 import RecentFiles from "@components/DashboardUtilities/RecentFiles";
 import Shortcut from "@components/DashboardUtilities/Shortcut";
 import UserCard from "@components/DashboardUtilities/UserCard";
 import TotalSpaceCard from "@components/DashboardUtilities/TotalSpaceCard";
 import DataCardsWrapper from "@components/DashboardUtilities/DataCardsWrapper";
-
+import { useGoogleAuth } from "@contexts/gauth.context";
+import { AuthContext } from "@contexts/auth.context";
+import { useContext, useEffect } from "react";
+ 
 const shortcuts = [
 
   {
@@ -29,47 +31,33 @@ const shortcuts = [
   },
 ];
 
-const files = [
-  { 
-    name: "Report_Q1.pdf", 
-    modifiedDate: "2024-11-01 10:24 AM", 
-    location: "/documents/reports", 
-    size: "1.2 MB" 
-  },
-  { 
-    name: "Vacation_Photos.zip", 
-    modifiedDate: "2024-10-25 03:15 PM", 
-    location: "/downloads", 
-    size: "150 MB" 
-  },
-  { 
-    name: "Presentation.pptx", 
-    modifiedDate: "2024-10-20 09:00 AM", 
-    location: "/work/presentations", 
-    size: "4.5 MB" 
-  },
-  { 
-    name: "Code_Project.zip", 
-    modifiedDate: "2024-10-18 08:45 PM", 
-    location: "/development/projects", 
-    size: "32.8 MB" 
-  },
-  { 
-    name: "Design_Mockup.png", 
-    modifiedDate: "2024-11-11 02:37 PM", 
-    location: "/work/designs", 
-    size: "2.1 MB" 
-  },
-];
-const spaceData = [
-  { name: 'Drive 1', totalSpace: 500, usedSpace: 200 },
-  { name: 'Drive 2', totalSpace: 1000, usedSpace: 600 },
-  // Agrega más objetos si es necesario
-];
-
 
 
 export default function Dashboard() {
+
+  const authContext = useContext(AuthContext);
+  const { fetchConnections, gauthTokens } = useGoogleAuth();
+
+  useEffect(() => {
+    if (!authContext) {
+      console.error("AuthContext no disponible.");
+      return;
+    }
+
+    const { auth } = authContext;
+
+    if (auth.user?.userId) {
+      fetchConnections(auth.user.userId); // Opcional, si necesitas conexiones del backend
+    } else {
+      console.error("Usuario no autenticado.");
+    }
+  }, [authContext]);
+
+
+
+
+
+  
     return (
       <div className="bg-[#121212] w-full h-full grid grid-cols-7 grid-rows-7 gap-4 p-6">
         {/* Contenedor de DataCards, ajustado al grid proporcionado */}
@@ -77,9 +65,9 @@ export default function Dashboard() {
 
   
         {/* Data Analysis*/}
-        <div className="col-span-2 row-span-7 col-start-6 row-start-1 bg-white rounded-lg p-8">
+        <div className="col-span-2 row-span-7 col-start-6 row-start-1  col bg-white rounded-lg p-8">
           <UserCard/>
-          <TotalSpaceCard data={spaceData}/>
+          <TotalSpaceCard gauthTokens={gauthTokens.map(token => token.access)} />
        
         </div>
   
@@ -102,12 +90,11 @@ export default function Dashboard() {
         <div className="col-span-4 row-span-4 col-start-2 row-start-4 bg-white rounded-lg relative">
         <p className="text-2xl font-bold absolute top-1 left-2">Recent Files</p>
 
-          <RecentFiles files={files} />
+          <RecentFiles gauthTokens={gauthTokens.map(token => token.access)} />
         </div>
   
         {/* Un contenedor más que puede ser útil para el diseño */}
         <div className="row-span-7 col-start-1 row-start-1 bg-white rounded-lg">
-          {/* Aquí puedes colocar contenido si lo necesitas */}
         </div>
       </div>
     );

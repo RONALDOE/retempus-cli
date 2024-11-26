@@ -1,34 +1,70 @@
-import React from 'react';
-import { Doughnut } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import React, { useEffect, useState } from "react";
+import { Doughnut } from "react-chartjs-2";
+import { formatBytes } from "@utils/helpers";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import axios from "axios";
 
-// Registra los elementos necesarios para Chart.js
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-// Define el tipo para los datos que recibirás en la prop
 interface SpaceData {
-  name: string;
   totalSpace: number;
   usedSpace: number;
 }
 
-interface AnalysisCardProps {
-  data: SpaceData[];
+interface TotalSpaceCardProps {
+  gauthTokens: string[]; // Array de gauthTokens
 }
 
-const AnalysisCard: React.FC<AnalysisCardProps> = ({ data }) => {
-  // Calcula el espacio total y usado
-  const totalSpace = data.reduce((acc, item) => acc + item.totalSpace, 0);
-  const usedSpace = data.reduce((acc, item) => acc + item.usedSpace, 0);
+const TotalSpaceCard: React.FC<TotalSpaceCardProps> = ({ gauthTokens }) => {
+  const [spaceData, setSpaceData] = useState<SpaceData>({ totalSpace: 0, usedSpace: 0 });
+  const [loading, setLoading] = useState(true);
 
-  // Datos para el gráfico
+  useEffect(() => {
+    const fetchSpaceData = async () => {
+      try {
+        let totalSpace = 0;
+        let usedSpace = 0;
+        // Realiza solicitudes para cada token usando Axios
+        const requests = gauthTokens.map((token) =>
+          axios.get(`${import.meta.env.VITE_BACKEND_URL}/dashboard/driveInfo?accessToken=${token}`)
+        );
+
+        // Espera a que todas las solicitudes terminen
+        const responses = await Promise.all(requests);
+
+        // Suma los resultados de las respuestas
+        responses.forEach((response) => {
+          const { storageQuota } = response.data;
+          totalSpace += storageQuota.limit;
+          usedSpace += storageQuota.usage;
+        });
+
+        setSpaceData({ totalSpace, usedSpace });
+      } catch (error) {
+        console.error("Error al obtener los datos de espacio:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (gauthTokens.length > 0) {
+      fetchSpaceData();
+    }
+  }, [gauthTokens]);
+
+  if (loading) {
+    return <div className="text-center">Loading space data...</div>;
+  }
+
+  const { totalSpace, usedSpace } = spaceData;
+
   const chartData = {
-    labels: ['Used Space', 'Free Space'],
+    labels: ["Used Space", "Free Space"],
     datasets: [
       {
-        data: [usedSpace, totalSpace - usedSpace],
-        backgroundColor: ['#FF6384', '#36A2EB'], // Colores para usado y libre
-        hoverBackgroundColor: ['#FF6384', '#36A2EB'],
+        data: [formatBytes(usedSpace).value, formatBytes(totalSpace).value - formatBytes(usedSpace).value],
+        backgroundColor: ["#FF6384", "#36A2EB"],
+        hoverBackgroundColor: ["#FF6384", "#36A2EB"],
       },
     ],
   };
@@ -40,11 +76,11 @@ const AnalysisCard: React.FC<AnalysisCardProps> = ({ data }) => {
         <Doughnut data={chartData} />
       </div>
       <div className="mt-4 text-center">
-        <p>Total Space: {totalSpace} GB</p>
-        <p>Used Space: {usedSpace} GB</p>
+        <p>Total Space: {formatBytes(totalSpace).value} {formatBytes(totalSpace).unit} </p>
+        <p>Used Space: {formatBytes(usedSpace).value} {formatBytes(usedSpace).unit} </p>
       </div>
     </div>
   );
-}
+};
 
-export default AnalysisCard;
+export default TotalSpaceCard;

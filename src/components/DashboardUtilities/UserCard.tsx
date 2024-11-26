@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function UserCard() {
   return (
-    <div className='w-full h-96 shadow-xl items-center justify-center flex flex-col rounded-xl'>
+    <div className='w-full h-96 border-2 border-dashed border-black items-center justify-center flex flex-col rounded-xl'>
         <div className='w-36 h-36 bg-black rounded-full'>
             <img
                 className='w-full h-full object-cover rounded-full'

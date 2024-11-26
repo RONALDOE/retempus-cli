@@ -1,6 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
+import { ContextMenuProvider } from "@contexts/contextmenu.context"; // Importamos el provider
+
 import {AuthProvider} from "@contexts/auth.context";
 import {
   createBrowserRouter,
@@ -65,10 +67,13 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
+    <ContextMenuProvider>
+
     <GoogleAuthProvider>	
     <AuthProvider>
     <RouterProvider router={router} />
     </AuthProvider>
     </GoogleAuthProvider>	
+    </ContextMenuProvider>
   </React.StrictMode>
 );

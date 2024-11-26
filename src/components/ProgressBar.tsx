@@ -1,18 +1,12 @@
 import React from "react";
-
+import { formatBytes } from "@utils/helpers";
 interface ProgressBarProps {
   total: number; // Capacidad total en bytes
   used: number; // Capacidad usada en bytes
 }
 
 // Función para convertir bytes a la unidad más adecuada
-const formatBytes = (bytes: number): { value: number; unit: string } => {
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-  if (bytes === 0) return { value: 0, unit: "Bytes" };
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  const value = bytes / Math.pow(1024, i);
-  return { value: parseFloat(value.toFixed(2)), unit: sizes[i] };
-};
+
 
 const ProgressBar: React.FC<ProgressBarProps> = ({ total, used }) => {
   // Convertimos los valores a unidades legibles

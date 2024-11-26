@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode, useState } from "react";
+import React, { createContext, useContext, ReactNode, useState, useEffect } from "react";
 import axios from "axios";
 import { IConnection } from "@utils/types";
 
@@ -13,6 +13,7 @@ interface GoogleAuthContextType {
   ) => Promise<ValidationResult | null>;
   revokeToken: (userId: string, accessToken: string, ) => Promise<boolean>;
   fetchConnections: (userId: string) => Promise<void>; // Método para actualizar conexiones
+  gauthTokens: Record<string, string>[]; // Tokens de acceso almacenados en el contexto
 }
 
 interface ValidationResult {
@@ -39,13 +40,13 @@ export const GoogleAuthProvider: React.FC<GoogleAuthProviderProps> = ({
 
   // Función para obtener tokens almacenados en localStorage
   const getStoredTokens = (): string[] => {
-    const tokens = localStorage.getItem("accessTokens");
+    const tokens = localStorage.getItem("gauthTokens");
     return tokens ? JSON.parse(tokens) : [];
   };
 
   // Función para actualizar los tokens en localStorage
   const setStoredTokens = (tokens: string[]): void => {
-    localStorage.setItem("accessTokens", JSON.stringify(tokens));
+    localStorage.setItem("gauthTokens", JSON.stringify(tokens));
     console.log("Tokens almacenados:", tokens);
   };
 
@@ -61,6 +62,25 @@ export const GoogleAuthProvider: React.FC<GoogleAuthProviderProps> = ({
       return null;
     }
   };
+
+
+  const [gauthTokens, setgauthTokens] = useState<Record<string, string>[]>([]);
+
+  // Función para cargar los gauthTokens desde localStorage
+  const loadgauthTokens = (): void => {
+    const storedTokens = localStorage.getItem("tokens");
+    if (storedTokens) {
+      setgauthTokens(JSON.parse(storedTokens));
+    } else {
+      setgauthTokens([]);
+    }
+  };
+
+  // Cargar los gauthTokens al montar el componente
+  useEffect(() => {
+    loadgauthTokens();
+  }, []);
+
 
   // Validar el token de acceso
   const validateToken = async (
@@ -139,12 +159,15 @@ export const GoogleAuthProvider: React.FC<GoogleAuthProviderProps> = ({
         validateToken,
         revokeToken,
         fetchConnections,
+        gauthTokens
       }}
     >
       {children}
     </GoogleAuthContext.Provider>
   );
 };
+
+
 
 // Hook para usar el contexto
 export const useGoogleAuth = (): GoogleAuthContextType => {

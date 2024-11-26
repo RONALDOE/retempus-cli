@@ -1,7 +1,7 @@
 import ProgressBar from "../ProgressBar";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
+import { formatBytes } from "@utils/helpers";
 
 //shadow-[0px_0px_31px_-1px_rgba(255,255,255,_0.5)]
 interface StorageQuota {
@@ -30,13 +30,12 @@ interface DataCardProps {
 }
 export default function DataCard({ accessToken }: DataCardProps) {
   const [data, setData] = useState<DriveInfo | null>(null);
-  
 
   useEffect(() => {
     const fetchData = async (accessToken: string) => {
       try {
         const response = await axios.get<DriveInfo>(
-          "http://localhost:3001/dashboard/driveInfo?accessToken=" + accessToken
+          `${import.meta.env.VITE_BACKEND_URL}/dashboard/driveInfo?accessToken=` + accessToken
         );
         setData(response.data);
       } catch (error) {
@@ -46,12 +45,25 @@ export default function DataCard({ accessToken }: DataCardProps) {
     fetchData(accessToken);
   }, [accessToken]);
   return (
-    <div className='w-1/3 min-h-max p-4 flex flex-col bg-[white] rounded-lg hover:scale-105 transition-all   '>
+    <div
+      className='w-1/3 min-h-max p-4 flex flex-col bg-[white] rounded-lg hover:scale-105 transition-all'
+      title={
+        `Email ${data?.user.emailAddress} \nName ${data?.user.displayName} \nStorage ${formatBytes(data?.storageQuota.usage ?? 0).value}${formatBytes(data?.storageQuota.usage ?? 0).unit} of ${formatBytes(data?.storageQuota.limit ?? 0).value}${formatBytes(data?.storageQuota.limit    ?? 0).unit}`}
+    >
       <div className='w-full h-24'>
-        <img src={data?.user.photoLink} alt='' className='h-full w-24 bg-black rounded-full' />
+        <img
+          src={data?.user.photoLink}
+          alt=''
+          className='h-full w-24 bg-black rounded-full'
+        />
       </div>
-      <p className=' mt-4 text-2xl font-bold text-[#121212] '>{data?.user.emailAddress.split("@")[0]}</p>
-      <ProgressBar total={data?.storageQuota.limit ?? 0} used={data?.storageQuota.usage ?? 0} />
+      <p className=' mt-4 text-2xl font-bold text-[#121212] '>
+        {data?.user.emailAddress.split("@")[0]}
+      </p>
+      <ProgressBar
+        total={data?.storageQuota.limit ?? 0}
+        used={data?.storageQuota.usage ?? 0}
+      />
     </div>
   );
 }

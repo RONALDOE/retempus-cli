@@ -75,7 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   // Función para obtener nuevos tokens de acceso y guardarlos
-  const fetchAccessTokens = async (userId: string): Promise<void> => {
+  const fetchgauthTokens = async (userId: string): Promise<void> => {
     try {
       const response = await axios.get(`${backend}/gauth/get-refresh-tokens`, {
         params: { userId },
@@ -102,7 +102,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       localStorage.setItem("tokens", JSON.stringify(tokensArray)); // Guarda los tokens en localStorage
     } catch (error) {
-      console.error("Error al obtener nuevos accessTokens:", error);
+      console.error("Error al obtener nuevos gauthTokens:", error);
     }
   };
 
@@ -127,7 +127,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       // Obtén los nuevos tokens de acceso después de iniciar sesión
       console.log("Obteniendo nuevos tokens de acceso...");
-      await fetchAccessTokens(user.userId);
+      await fetchgauthTokens(user.userId);
       console.log("Tokens de acceso obtenidos.");
       window.location.replace("http://localhost:3000/dashboard");
 
