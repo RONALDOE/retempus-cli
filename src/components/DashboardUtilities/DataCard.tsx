@@ -31,6 +31,8 @@ interface DataCardProps {
 export default function DataCard({ accessToken }: DataCardProps) {
   const [data, setData] = useState<DriveInfo | null>(null);
 
+
+  
   useEffect(() => {
     const fetchData = async (accessToken: string) => {
       try {

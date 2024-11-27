@@ -6,12 +6,15 @@ import { faCloudArrowDown } from "@fortawesome/free-solid-svg-icons"; // Importa
 
 interface FileData {
   name: string;
-  modifiedDate: string;
+  modifiedTime: string;
   mimeType: string;
   id: string;
   iconLink: string;
   webViewLink: string;
   accessToken: string;
+  starred: boolean;
+   size:string;
+    fileExtension: string;
 }
 
 interface RecentFilesProps {
@@ -48,7 +51,7 @@ export default function RecentFiles({ gauthTokens }: RecentFilesProps) {
         }
 
         const sortedFiles = allFiles.sort((a, b) =>
-          new Date(b.modifiedDate).getTime() - new Date(a.modifiedDate).getTime()
+          new Date(b.modifiedTime).getTime() - new Date(a.modifiedTime).getTime()
         );
 
         setFiles(sortedFiles.slice(0, 5));
@@ -87,7 +90,7 @@ export default function RecentFiles({ gauthTokens }: RecentFilesProps) {
             />
             <div className="flex-1 truncate font-medium text-gray-800">{file.name}</div>
             <div className="flex-1 truncate text-gray-600 text-sm text-center">
-              {new Date(file.modifiedDate).toLocaleString()}
+              {new Date(file.modifiedTime).toLocaleString()}
             </div>
             <div className="flex-1 truncate text-gray-500 text-sm text-left">{file.mimeType}</div>
             <div className="flex-1 flex justify-center">
@@ -100,6 +103,7 @@ export default function RecentFiles({ gauthTokens }: RecentFilesProps) {
               </button>
               <a
                 href={file.webViewLink}
+                target="_blank"
                 className="ml-4 text-xl font-bold text-blue-500 hover:text-blue-700"
               >
                 Open

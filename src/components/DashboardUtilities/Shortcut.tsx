@@ -1,13 +1,14 @@
-import React from "react";
 
 interface ShortcutProps {
   name: string;
   icon: string;
+  href: string;
 }
 
-export default function Shortcut({ name, icon }: ShortcutProps) {
+export default function Shortcut({ name, icon, href }: ShortcutProps) {
   return (
-    <div
+    <a
+    href={href}
       className={`w-20 h-20 flex flex-col items-center justify-center rounded-xl  shadow-lg bg-slate-100 hover:scale-105`}
     >
       {/* Ícono */}
@@ -20,6 +21,6 @@ export default function Shortcut({ name, icon }: ShortcutProps) {
       </div>
 
       {/* Nombre */}
-    </div>
+    </a>
   );
 }

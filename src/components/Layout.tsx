@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Logo from "@assets/RetempusLogo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AuthContext } from "@contexts/auth.context";
-import { faHome, faInfoCircle, faCogs, faEnvelope, faChevronLeft, faChevronRight, faPowerOff } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faMagnifyingGlass, faCogs, faTrash, faChevronLeft, faChevronRight, faPowerOff } from "@fortawesome/free-solid-svg-icons";
 
 interface SidebarItem {
   name: string;
@@ -12,10 +12,10 @@ interface SidebarItem {
 }
 
 const sidebarItems: SidebarItem[] = [
-  { name: "Home", link: "/", icon: <FontAwesomeIcon icon={faHome} /> },
-  { name: "About", link: "#about", icon: <FontAwesomeIcon icon={faInfoCircle} /> },
-  { name: "Services", link: "#services", icon: <FontAwesomeIcon icon={faCogs} /> },
-  { name: "Contact", link: "#contact", icon: <FontAwesomeIcon icon={faEnvelope} /> },
+  { name: "Home", link: "/dashboard", icon: <FontAwesomeIcon icon={faHome} /> },
+  { name: "Search", link: "/search", icon: <FontAwesomeIcon icon={faMagnifyingGlass} /> },
+  { name: "Trash", link: "/trashcan", icon: <FontAwesomeIcon icon={faTrash} /> },
+  { name: "Settings", link: "/settings", icon: <FontAwesomeIcon icon={faCogs} /> },
 ];
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {

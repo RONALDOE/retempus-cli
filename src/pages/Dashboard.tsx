@@ -12,18 +12,23 @@ const shortcuts = [
   {
     name: "Images",
     icon: "https://img.icons8.com/fluency/256/stack-of-photos.png",
+    href: `${import.meta.env.VITE_HOST}/search?q=&categories=application%2Fvnd.google-apps.photo%2Capplication%2Fvnd.google-apps.drawing`
   },
   {
     name: "Videos",
     icon: "https://img.icons8.com/fluency/256/video--v1.png",
+    href: `${import.meta.env.VITE_HOST}/search?q=&categories=video%2Fmp4%2Capplication%2Fvnd.google-apps.video%2Capplication%2Fvnd.google-apps.vid`
   },
   {
     name: "Music",
     icon: "https://img.icons8.com/fluency/256/musical-notes.png",
+    href: `${import.meta.env.VITE_HOST}/search?q=&categories=application%2Fvnd.google-apps.audio`
   },
   {
     name: "Documents",
     icon: "https://img.icons8.com/fluency/256/copy.png",
+    href: `${import.meta.env.VITE_HOST}/search?q=&categories=application%2Fvnd.google-apps.presentation%2Capplication%2Fvnd.google-apps.spreadsheet%2Capplication%2Fvnd.google-apps.form%2Capplication%2Fvnd.google-apps.jam%2Capplication%2Fvnd.google-apps.file%2Capplication%2Fvnd.google-apps.document%2Capplication%2Fvnd.google-apps.drawing%2Capplication%2Fvnd.google-apps.fusiontable%2Capplication%2Fvnd.google-apps.mail-layout%2Capplication%2Fvnd.google-apps.script%2Capplication%2Fvnd.google-apps.site`
+
   },
   {
     name: "Upload",
@@ -81,6 +86,7 @@ export default function Dashboard() {
                 key={index}
                 name={shortcut.name}
                 icon={shortcut.icon}
+                href={shortcut.href!}
               />
               ))}
            </div>

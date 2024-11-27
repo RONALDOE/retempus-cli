@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -40,6 +40,7 @@ export default function SearchBar() {
     { knownName: "Unknown File Type", googleName: "application/vnd.google-apps.unknown" },
     { knownName: "Google Vids", googleName: "application/vnd.google-apps.vid" },
     { knownName: "Google Video", googleName: "application/vnd.google-apps.video" },
+    { knownName: "Video MP4", googleName: "video/mp4" },
   ];
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -51,13 +52,24 @@ export default function SearchBar() {
       ...filters,
       categories: searchParams.get("categories")?.split(",") || [],
       date: searchParams.get("date") || "",
+      containsWords: searchParams.get("containsWords") || "",
+      modifiedDate: searchParams.get("modifiedDate") || "",
+      modificationRange: {
+        start: searchParams.get("startModificationDate") || "",
+        end: searchParams.get("endModificationDate") || "",
+      },
     });
+
+    
+
+
   }, [searchParams]);
 
   const toggleFilters = () => setFiltersVisible(!filtersVisible);
 
   const handleSearch = () => {
     setFiltersVisible(false);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const params: any = { q: searchQuery };
     if (filters.categories.length > 0)
       params.categories = filters.categories.join(",");
@@ -70,6 +82,7 @@ export default function SearchBar() {
       if (filters.modificationRange.end)
         params.endModificationDate = filters.modificationRange.end;
     }
+
     setSearchParams(params);
 
     // Log de los datos de búsqueda
@@ -79,6 +92,8 @@ export default function SearchBar() {
   };
 
   const clearAll = () => {
+    setFiltersVisible(false);
+
     setSearchQuery("");
     setFilters({
       categories: [],
@@ -101,7 +116,7 @@ export default function SearchBar() {
   };
 
   return (
-    <div className="w-[50rem] mx-auto p-4">
+    <div className="w-[50rem] mx-auto p-4 relative">
       {/* Search Bar */}
       <div className="flex items-center border rounded-full px-4 py-2 shadow-md bg-white gap-2">
         <input
@@ -137,7 +152,7 @@ export default function SearchBar() {
 
       {/* Filters Menu */}
       {filtersVisible && (
-        <div className="mt-4 p-4 border rounded-md bg-gray-50">
+        <div className="mt-4 p-4 border rounded-md bg-gray-50 absolute w-[45rem] left-[50%] -translate-x-[50%]">
           <div className="mb-4">
             <label className="block mb-2 text-sm font-medium">Categories</label>
             <div className="grid grid-cols-2 gap-2">

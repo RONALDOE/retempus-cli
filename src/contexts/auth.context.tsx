@@ -74,37 +74,42 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  // Función para obtener nuevos tokens de acceso y guardarlos
-  const fetchgauthTokens = async (userId: string): Promise<void> => {
-    try {
-      const response = await axios.get(`${backend}/gauth/get-refresh-tokens`, {
-        params: { userId },
-      });
-      console.log((response.data.refreshTokens));
+// Función para obtener nuevos tokens de acceso y guardarlos
+const fetchgauthTokens = async (userId: string): Promise<void> => {
+  try {
+    const response = await axios.get(`${backend}/gauth/get-refresh-tokens`, {
+      params: { userId },
+    });
+    console.log(response.data.refreshTokens);
 
-      const refreshTokens: string[] = response.data.refreshTokens;
+    const refreshTokens: string[] = response.data.refreshTokens;
+    const emails: string[] = response.data.emails;
 
-      if (!refreshTokens.length) {
-        console.error("No se encontraron refreshTokens para este usuario.");
-        return;
-      }
-
-      const tokensArray = [];
-
-      for (const refreshToken of refreshTokens) {
-        const tokenResponse = await axios.get(`${backend}/gauth/validate-token?userId=${userId}&actualAccessToken=${""}&refreshToken=${refreshToken}`);
-
-        if (tokenResponse.status === 200) {
-          const { accessToken } = tokenResponse.data;
-          tokensArray.push({ refresh: refreshToken, access: accessToken });
-        }
-      }
-
-      localStorage.setItem("tokens", JSON.stringify(tokensArray)); // Guarda los tokens en localStorage
-    } catch (error) {
-      console.error("Error al obtener nuevos gauthTokens:", error);
+    if (!refreshTokens.length) {
+      console.error("No se encontraron refreshTokens para este usuario.");
+      return;
     }
-  };
+
+    const tokensArray = [];
+
+    // Aseguramos que se asocie cada refreshToken con el email correspondiente
+    for (let i = 0; i < refreshTokens.length; i++) {
+      const refreshToken = refreshTokens[i];
+      const email = emails[i];  // Se obtiene el email correspondiente
+
+      const tokenResponse = await axios.get(`${backend}/gauth/validate-token?userId=${userId}&actualAccessToken=${""}&refreshToken=${refreshToken}`);
+
+      if (tokenResponse.status === 200) {
+        const { accessToken } = tokenResponse.data;
+        tokensArray.push({ refresh: refreshToken, access: accessToken, email }); // Asocia el email correcto
+      }
+    }
+
+    localStorage.setItem("tokens", JSON.stringify(tokensArray)); // Guarda los tokens en localStorage
+  } catch (error) {
+    console.error("Error al obtener nuevos gauthTokens:", error);
+  }
+};
 
   // Función para iniciar sesión
   const login = async (credentials: LoginCredentials): Promise<boolean> => {
@@ -129,7 +134,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.log("Obteniendo nuevos tokens de acceso...");
       await fetchgauthTokens(user.userId);
       console.log("Tokens de acceso obtenidos.");
-      window.location.replace("http://localhost:3000/dashboard");
+      window.location.replace(`${import.meta.env.VITE_HOST}/dashboard`);
 
       return true;
     } catch (error) {
@@ -177,7 +182,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await axios.post(`${backend}/auth/register`, credentials);
       if (response.status === 201) {
-        window.location.replace("http://localhost:3000/login");
+        window.location.replace(`${import.meta.env.VITE_HOST}/login`);
         return true;
       }
       return false;
@@ -206,7 +211,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       const response = await axios.post(`${backend}/auth/reset-password`, { token, newPassword });
       if (response.status === 200) {
-        window.location.replace("http://localhost:3000/login");
+        window.location.replace(`${import.meta.env.VITE_HOST}/login`);
         return { status: 200, message: "Contraseña cambiada exitosamente." };
       }
       return { status: response.status, message: "Error inesperado. Por favor, inténtalo de nuevo." };

@@ -5,7 +5,7 @@ import { useGoogleAuth } from "@contexts/gauth.context";
 import { AuthContext } from "@contexts/auth.context";
 import FileTile from '@components/Filetile';
 
-export default function Search() {
+export default function Trashcan() {
   const [searchParams] = useSearchParams();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [files, setFiles] = useState<any[]>([]); // Estado para guardar los archivos obtenidos
@@ -61,7 +61,7 @@ export default function Search() {
         if (modifiedDate) queryParams.append('modifiedDate', modifiedDate);
 
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/files/filtered?${queryParams.toString()}`
+          `${import.meta.env.VITE_BACKEND_URL}/files/search-trashcan?${queryParams.toString()}`
         );
 
         if (!response.ok) {

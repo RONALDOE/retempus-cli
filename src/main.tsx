@@ -13,6 +13,7 @@ import Search from "@pages/Search";
 import Register from "@pages/Register";
 import Forgot from "@pages/Forgot";
 import Reset from "@pages/Reset";
+import Trashcan from "@pages/Trashcan";
 import ProtectedRoute from "@components/ProtectedRoute";
 import { GoogleAuthProvider } from "@contexts/gauth.context";
 const router = createBrowserRouter([
@@ -24,9 +25,11 @@ const router = createBrowserRouter([
   {
     path: "/search/:q?",
     element: (
-      <Layout>
-        <Search/>
-      </Layout>
+      <ProtectedRoute>
+        <Layout>
+          <Search />
+        </Layout>
+      </ProtectedRoute>
     ),
   },
 
@@ -53,6 +56,16 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <Layout>
           <Dashboard />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/trashcan",
+    element: (
+      <ProtectedRoute>
+        <Layout>
+          <Trashcan />
         </Layout>
       </ProtectedRoute>
     ),
