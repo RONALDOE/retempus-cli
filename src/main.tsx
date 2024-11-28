@@ -16,6 +16,7 @@ import Reset from "@pages/Reset";
 import Trashcan from "@pages/Trashcan";
 import ProtectedRoute from "@components/ProtectedRoute";
 import { GoogleAuthProvider } from "@contexts/gauth.context";
+import Upload from "@pages/Upload";
 const router = createBrowserRouter([
   // Ruta principal que usará Layout
   {
@@ -56,6 +57,16 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <Layout>
           <Dashboard />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/upload",
+    element: (
+      <ProtectedRoute>
+        <Layout>
+          <Upload />
         </Layout>
       </ProtectedRoute>
     ),

@@ -33,6 +33,8 @@ const shortcuts = [
   {
     name: "Upload",
     icon: "https://img.icons8.com/fluency/256/upload-to-cloud.png",
+    href: `${import.meta.env.VITE_HOST}/uploadz`
+
   },
 ];
 

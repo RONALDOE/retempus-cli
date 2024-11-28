@@ -103,7 +103,7 @@ export default function Search() {
       {!loading && !error && files.length === 0 && <p>No files found</p>}
       
       {/* Grid de archivos */}
-      <div className="grid grid-cols-6 sm:grid-cols-4 lg:grid-cols-6 gap-4 p-">
+      <div className="grid grid-cols-6 sm:grid-cols-4 lg:grid-cols-6 gap-4 p-4">
         {currentFiles.map((file) => (
           <FileTile key={file.id} fileData={file} />
         ))}

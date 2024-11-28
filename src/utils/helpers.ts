@@ -95,8 +95,8 @@ export async function trashFile(fileId: string, accessToken: string) {
 
 
     // Realizar la solicitud para eliminar el archivo
-    const response = await axios.delete(
-      `${import.meta.env.VITE_BACKEND_URL}/files/trash`, 
+    const response = await axios.put(
+      `${import.meta.env.VITE_BACKEND_URL}/files/trash`, null,
       {
         params: {
           fileId,
@@ -118,3 +118,35 @@ export async function trashFile(fileId: string, accessToken: string) {
     console.error("Error al trashear el archivo:", error);
   }
 }
+
+
+export async function untrashFile(fileId: string, accessToken: string) {
+  try {
+    console.log("Id:", fileId, "Access Token:", accessToken);
+
+
+    // Realizar la solicitud para eliminar el archivo
+    const response = await axios.put(
+      `${import.meta.env.VITE_BACKEND_URL}/files/untrash`,null, 
+      {
+        params: {
+          fileId,
+          accessToken,
+        },
+      }
+    );
+
+    // Verificar si la respuesta fue exitosa
+    if (response.status === 200) {
+      console.log("Archivo trasheado correctamente");
+
+      // Refrescar la página después de eliminar el archivo
+      window.location.reload();
+    } else {
+      console.error("Error al trashear el archivo:", response.data.error);
+    }
+  } catch (error) {
+    console.error("Error al trashear el archivo:", error);
+  }
+}
+
