@@ -43,7 +43,16 @@ const shortcuts = [
 export default function Dashboard() {
 
   const authContext = useContext(AuthContext);
-  const { fetchConnections, gauthTokens } = useGoogleAuth();
+  const { fetchConnections, gauthTokens, loadgauthTokens } = useGoogleAuth();
+  useEffect(() => {
+    const {fetchgauthTokens, auth} = authContext
+    console.log("Fetching tokens")
+    async function fetchData() {
+      await fetchgauthTokens(auth.user.userId, ""); // Obtiene los tokens de Google
+    }
+    fetchData();
+  }, []);
+
 
   useEffect(() => {
     if (!authContext) {
@@ -51,7 +60,7 @@ export default function Dashboard() {
       return;
     }
 
-    const { auth } = authContext;
+    const { auth  } = authContext;
 
     if (auth.user?.userId) {
       fetchConnections(auth.user.userId); // Opcional, si necesitas conexiones del backend
@@ -61,12 +70,13 @@ export default function Dashboard() {
   }, [authContext]);
 
 
+  
 
 
 
   
     return (
-      <div className="bg-[#121212] w-full h-full grid grid-cols-7 grid-rows-7 gap-4 p-6">
+      <div className="bg-[#121212] w-full h-full grid grid-cols-7 col-start-1 grid-rows-7 gap-4 p-6">
         {/* Contenedor de DataCards, ajustado al grid proporcionado */}
         <DataCardsWrapper/>
 
@@ -79,7 +89,7 @@ export default function Dashboard() {
         </div>
   
         {/* Shortcuts*/}
-        <div className="col-span-4 col-start-2 row-start-3 bg-white rounded-lg p-2 relative">
+        <div className="col-span-5 col-start-1 row-start-3 bg-white rounded-lg p-2 relative">
 
            <p className="text-2xl font-bold absolute top-1 left-2">Shorcuts</p>
            <div className="flex flex-row justify-center items-center gap-4">
@@ -89,21 +99,20 @@ export default function Dashboard() {
                 name={shortcut.name}
                 icon={shortcut.icon}
                 href={shortcut.href!}
+                
               />
               ))}
            </div>
         </div>
   
         {/*RecentFiles */}
-        <div className="col-span-4 row-span-4 col-start-2 row-start-4 bg-white rounded-lg relative">
+        <div className="col-span-5 row-span-4 col-start-1 row-start-4 bg-white rounded-lg relative">
         <p className="text-2xl font-bold absolute top-1 left-2">Recent Files</p>
 
           <RecentFiles gauthTokens={gauthTokens.map(token => token.access)} />
         </div>
   
-        {/* Un contenedor más que puede ser útil para el diseño */}
-        <div className="row-span-7 col-start-1 row-start-1 bg-white rounded-lg">
-        </div>
+       
       </div>
     );
   }

@@ -1,8 +1,9 @@
 import ProgressBar from "../ProgressBar";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { formatBytes } from "@utils/helpers";
-
+import { deleteAccount, formatBytes } from "@utils/helpers";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {  faTrash } from "@fortawesome/free-solid-svg-icons";
 //shadow-[0px_0px_31px_-1px_rgba(255,255,255,_0.5)]
 interface StorageQuota {
   limit: number; // Cuota máxima de almacenamiento en bytes
@@ -26,29 +27,32 @@ interface DriveInfo {
 }
 
 interface DataCardProps {
-  accessToken: string;
+  tokens: Record<string, string>; // Token de acceso
+  canDelete: boolean; // Indica si el usuario puede eliminar archivos
+  userId?: string;
 }
-export default function DataCard({ accessToken }: DataCardProps) {
+export default function DataCard({ tokens, canDelete, userId }: DataCardProps) {
   const [data, setData] = useState<DriveInfo | null>(null);
+
 
 
   
   useEffect(() => {
-    const fetchData = async (accessToken: string) => {
+    const fetchData = async (tokens: Record<string, string>) => {
       try {
         const response = await axios.get<DriveInfo>(
-          `${import.meta.env.VITE_BACKEND_URL}/dashboard/driveInfo?accessToken=` + accessToken
+          `${import.meta.env.VITE_BACKEND_URL}/dashboard/driveInfo?accessToken=` + tokens.access
         );
         setData(response.data);
       } catch (error) {
         console.error("Error al obtener la información:", error);
       }
     };
-    fetchData(accessToken);
-  }, [accessToken]);
+    fetchData(tokens);
+  }, [tokens]);
   return (
     <div
-      className='w-1/3 min-h-max p-4 flex flex-col bg-[white] rounded-lg hover:scale-105 transition-all'
+      className='relative w-[25rem] min-h-max p-4 flex flex-col bg-[white] rounded-lg '
       title={
         `Email ${data?.user.emailAddress} \nName ${data?.user.displayName} \nStorage ${formatBytes(data?.storageQuota.usage ?? 0).value}${formatBytes(data?.storageQuota.usage ?? 0).unit} of ${formatBytes(data?.storageQuota.limit ?? 0).value}${formatBytes(data?.storageQuota.limit    ?? 0).unit}`}
     >
@@ -66,6 +70,11 @@ export default function DataCard({ accessToken }: DataCardProps) {
         total={data?.storageQuota.limit ?? 0}
         used={data?.storageQuota.usage ?? 0}
       />
+      {canDelete && (
+        <button className=' absolute mt-4  top-0 right-4 text-xl text-red-600 hover:text-red-700' onClick={()=>deleteAccount(userId!, tokens.access)}>
+          <FontAwesomeIcon icon={faTrash} />
+        </button>
+      )}
     </div>
   );
 }

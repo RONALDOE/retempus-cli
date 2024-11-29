@@ -14,6 +14,8 @@ interface GoogleAuthContextType {
   revokeToken: (userId: string, accessToken: string, ) => Promise<boolean>;
   fetchConnections: (userId: string) => Promise<void>; // Método para actualizar conexiones
   gauthTokens: Record<string, string>[]; // Tokens de acceso almacenados en el contexto
+  getLink : (userId: string) => Promise<string | null>;
+  loadgauthTokens: () => void; // Método para cargar tokens desde localStorage
 }
 
 interface ValidationResult {
@@ -65,7 +67,6 @@ export const GoogleAuthProvider: React.FC<GoogleAuthProviderProps> = ({
 
 
   const [gauthTokens, setgauthTokens] = useState<Record<string, string>[]>([]);
-
   // Función para cargar los gauthTokens desde localStorage
   const loadgauthTokens = (): void => {
     const storedTokens = localStorage.getItem("tokens");
@@ -80,6 +81,16 @@ export const GoogleAuthProvider: React.FC<GoogleAuthProviderProps> = ({
   useEffect(() => {
     loadgauthTokens();
   }, []);
+
+  const getLink = async ( userId: string): Promise<string | null> => {
+    try {
+      const response = await axios.get(`${backendUrl}/gauth?userId=${userId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error al obtener la URL de autenticación:", error);
+      return null;
+    }
+  }
 
 
   // Validar el token de acceso
@@ -159,7 +170,9 @@ export const GoogleAuthProvider: React.FC<GoogleAuthProviderProps> = ({
         validateToken,
         revokeToken,
         fetchConnections,
-        gauthTokens
+        gauthTokens,
+        getLink,
+        loadgauthTokens,
       }}
     >
       {children}

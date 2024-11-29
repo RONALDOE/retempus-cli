@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useGoogleAuth } from "@contexts/gauth.context";
 import axios from "axios";
 import FolderTile from "@components/FolderTile";
-
+import { createFile } from "@utils/helpers";
 export default function Upload() {
   const { gauthTokens } = useGoogleAuth();
   const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
@@ -14,6 +14,8 @@ export default function Upload() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null); // Selected file for upload
   const [folderPage, setFolderPage] = useState(1); // Pagination for folder contents
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const [fileType, setFileType] = useState<string | null>(null);
+  const fileOptions = ["document", "spreadsheet", "presentation"];
 
   // Function to update the URL with email and folderId
   const updateUrlParams = (email: string | null, folderId: string | null) => {
@@ -80,6 +82,19 @@ export default function Upload() {
     }
   };
 
+
+  const handleFileCreate = async () => {
+    const accessToken = gauthTokens.find(
+      (token) => token.email === selectedEmail
+    )?.access;
+    if (!fileType || !accessToken) {
+      alert("Please select a file type and email.");
+      return;
+    }
+    createFile(fileType,accessToken); 
+
+  }
+
   // Handle email change
   const handleEmailChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newEmail = event.target.value;
@@ -134,9 +149,13 @@ export default function Upload() {
   const itemsPerPageForContents = 12; // Number of items per page for folder contents
   const indexOfLastContent = folderPage * itemsPerPageForContents;
   const indexOfFirstContent = indexOfLastContent - itemsPerPageForContents;
-  const currentContents = folderContents.slice(indexOfFirstContent, indexOfLastContent);
+  const currentContents = folderContents.slice(
+    indexOfFirstContent,
+    indexOfLastContent
+  );
 
-  const paginateFolderContents = (pageNumber: number) => setFolderPage(pageNumber);
+  const paginateFolderContents = (pageNumber: number) =>
+    setFolderPage(pageNumber);
 
   // Handle folder creation
   const handleCreateFolder = async () => {
@@ -149,18 +168,14 @@ export default function Upload() {
       const accessToken = gauthTokens.find(
         (token) => token.email === selectedEmail
       )?.access;
-      console.log(accessToken,
+      console.log(accessToken, folderName, parentFolderId);
+      const data = {
+        accessToken,
         folderName,
-         parentFolderId,)
-         const data ={
-            accessToken,
-          folderName,
-          folderParent: parentFolderId,
-         }
+        folderParent: parentFolderId,
+      };
 
-      const response = await axios.post(
-        `${backendUrl}/files/folders`, data
-      );
+      const response = await axios.post(`${backendUrl}/files/folders`, data);
       alert("Folder created successfully!");
       // Reload folders after adding new one
       setFolders([]); // Reset the folders state
@@ -172,19 +187,19 @@ export default function Upload() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center space-y-4 p-6">
+    <div className='flex flex-col items-center justify-center space-y-4 p-6'>
       {/* Email selection */}
-      <div className="w-full max-w-md flex items-center justify-center flex-col">
-        <label className="block text-gray-700 font-bold mb-2" htmlFor="email">
+      <div className='w-full max-w-md flex items-center justify-center flex-col'>
+        <label className='block text-gray-700 font-bold mb-2' htmlFor='email'>
           Select an email:
         </label>
         <select
-          id="email"
-          className="w-full border border-gray-300 rounded-lg p-2"
+          id='email'
+          className='w-full border border-gray-300 rounded-lg p-2'
           value={selectedEmail || ""}
           onChange={handleEmailChange}
         >
-          <option value="" disabled>
+          <option value='' disabled>
             -- Select an email --
           </option>
           {gauthTokens.map((token, index: number) => (
@@ -199,7 +214,7 @@ export default function Upload() {
       {selectedEmail && (
         <button
           onClick={handleCreateFolder}
-          className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+          className='px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600'
         >
           Add Folder
         </button>
@@ -207,8 +222,8 @@ export default function Upload() {
 
       {/* Folder grid */}
       {!currentFolderId && selectedEmail && (
-        <div className="w-full">
-          <div className="grid grid-cols-6 sm:grid-cols-4 lg:grid-cols-6 gap-4 p-4">
+        <div className='w-full'>
+          <div className='grid grid-cols-6 sm:grid-cols-4 lg:grid-cols-6 gap-4 p-4'>
             {currentFolders.map((folder) => (
               <FolderTile
                 key={folder.id}
@@ -228,8 +243,8 @@ export default function Upload() {
 
       {/* Folder contents grid */}
       {currentFolderId && (
-        <div className="w-full">
-          <div className="grid grid-cols-6 sm:grid-cols-4 lg:grid-cols-6 gap-4 p-4">
+        <div className='w-full'>
+          <div className='grid grid-cols-6 sm:grid-cols-4 lg:grid-cols-6 gap-4 p-4'>
             {currentContents.length > 0 ? (
               currentContents.map((folder) => (
                 <FolderTile
@@ -252,18 +267,46 @@ export default function Upload() {
       )}
 
       {/* File upload */}
-      <div className="mt-6">
-        <input
-          type="file"
-          onChange={handleFileChange}
-          className="border border-gray-300 rounded-lg p-2"
-        />
-        <button
-          onClick={handleFileUpload}
-          className="mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+      <div className="flex flex-row gap-5">
+        <div className='mt-6 flex flex-col items-center space-y-4'>
+          <input
+            type='file'
+            onChange={handleFileChange}
+            className='block w-full max-w-xs text-lg text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-lg file:cursor-pointer file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100'
+          />
+          <button
+            onClick={handleFileUpload}
+            disabled={selectedFile ? false : true}
+            className='px-6 py-2 bg-blue-500 text-white rounded-lg shadow-md disabled:bg-gray-400 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2'
+          >
+            Upload File
+          </button>
+        </div>
+        
+        <p>Or</p>
+
+        <div className='mt-6 flex flex-col items-center space-y-4'>
+        <select
+        onChange={(e) => setFileType(e.target.value as string)}
+          className='block w-full max-w-xs text-lg text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-lg file:cursor-pointer file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100'
         >
-          Upload File
+          <option value='' disabled>
+            -- Select a file type --
+          </option>
+          {fileOptions.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+        <button
+          onClick={handleFileCreate}
+          disabled={fileType ? false : true}
+          className='px-6 py-2 bg-blue-500 text-white rounded-lg shadow-md disabled:bg-gray-400 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2'
+        >
+          CreateFile
         </button>
+      </div>
       </div>
     </div>
   );
@@ -287,7 +330,7 @@ function Pagination({
   }
 
   return (
-    <div className="mt-4 flex justify-center space-x-2">
+    <div className='mt-4 flex justify-center space-x-2'>
       {pageNumbers.map((number) => (
         <button
           key={number}

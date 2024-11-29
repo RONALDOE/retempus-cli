@@ -31,6 +31,7 @@ interface AuthContextType {
   recover: (email: string) => Promise<{ status: number; message?: string }>;
   reset: (token: string, newPassword: string) => Promise<{ status: number; message?: string }>;
   loading: boolean;
+  fetchgauthTokens: (userId: string, accessToken: string) => Promise<void>;
 }
 
 interface LoginCredentials {
@@ -75,10 +76,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
 // Función para obtener nuevos tokens de acceso y guardarlos
-const fetchgauthTokens = async (userId: string): Promise<void> => {
+ const fetchgauthTokens = async (userId: string, accessToken: string | ""): Promise<void> => {
   try {
+    console.log(userId, accessToken);
     const response = await axios.get(`${backend}/gauth/get-refresh-tokens`, {
-      params: { userId },
+      params: { userId, accessToken },
     });
     console.log(response.data.refreshTokens);
 
@@ -132,7 +134,7 @@ const fetchgauthTokens = async (userId: string): Promise<void> => {
 
       // Obtén los nuevos tokens de acceso después de iniciar sesión
       console.log("Obteniendo nuevos tokens de acceso...");
-      await fetchgauthTokens(user.userId);
+      await fetchgauthTokens(user.userId, ""); // Obtiene los tokens de Google
       console.log("Tokens de acceso obtenidos.");
       window.location.replace(`${import.meta.env.VITE_HOST}/dashboard`);
 
@@ -227,7 +229,7 @@ const fetchgauthTokens = async (userId: string): Promise<void> => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ auth, login, logout, register, recover, reset, loading }}>
+    <AuthContext.Provider value={{ auth, login, logout, register, recover, reset, loading, fetchgauthTokens }}>
       {!loading && children}
     </AuthContext.Provider>
   );

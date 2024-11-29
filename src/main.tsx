@@ -17,6 +17,8 @@ import Trashcan from "@pages/Trashcan";
 import ProtectedRoute from "@components/ProtectedRoute";
 import { GoogleAuthProvider } from "@contexts/gauth.context";
 import Upload from "@pages/Upload";
+import Settings from "@pages/Settings";
+import Connected from "@pages/Connected";
 const router = createBrowserRouter([
   // Ruta principal que usará Layout
   {
@@ -33,6 +35,17 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
   },
+  {
+    path: "/connected",
+    element: (
+      <ProtectedRoute>
+        <Layout>
+          <Connected/>
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+
 
   // Rutas que no usan Layout
   {
@@ -57,6 +70,16 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <Layout>
           <Dashboard />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/settings",
+    element: (
+      <ProtectedRoute>
+        <Layout>
+          <Settings />
         </Layout>
       </ProtectedRoute>
     ),

@@ -150,3 +150,72 @@ export async function untrashFile(fileId: string, accessToken: string) {
   }
 }
 
+
+export async function deleteAccount(userId: string, accessToken: string) {
+  try {
+    console.log("Id:", userId, "Access Token:", accessToken);
+
+
+    // Realizar la solicitud para eliminar el archivo
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/gauth/revoke-token`, 
+      {
+          userId,
+          accessToken,
+      }
+    );
+
+    const tokensArray = JSON.parse(localStorage.getItem("tokens") || "[]");
+
+    // Buscar el token a eliminar
+    const index = tokensArray.findIndex((token: any) => token.access === accessToken);
+
+    // Eliminar el token de la lista
+    tokensArray.splice(index, 1);
+
+    // Guardar los tokens actualizados
+    localStorage.setItem("tokens", JSON.stringify(tokensArray));
+
+
+
+    // Verificar si la respuesta fue exitosa
+    if (response.status === 200) {
+      console.log("Token eliminado correctamente");
+
+      // Refrescar la página después de eliminar el archivo
+      window.location.reload();
+    } else {
+      console.error("Error al trashear el archivo:", response.data.error);
+    }
+  } catch (error) {
+    console.error("Error al trashear el archivo:", error);
+  }
+}
+
+export async function createFile(fileType: string, accessToken: string) {
+  try {
+
+
+    // Realizar la solicitud para eliminar el archivo
+    const response = await axios.post(
+      `${import.meta.env.VITE_BACKEND_URL}/files/create-document`, 
+      {
+          fileType,
+          accessToken,
+      }
+    );
+
+
+    // Verificar si la respuesta fue exitosa
+    if (response.status === 200) {
+      const { redirectUrl } = await response.data
+      window.location.href = redirectUrl; // Redirige al documento creado
+
+      // Refrescar la página después de eliminar el archivo
+    } else {
+      console.error("Error al crear el archivo:", response.data.error);
+    }
+  } catch (error) {
+    console.error("Error al crear el archivo:", error);
+  }
+}
