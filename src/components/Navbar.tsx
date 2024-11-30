@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Logo from "@assets/RetempusLogo.png";
 
 interface NavbarProps {
-  items: { name: string; link: string }[];
+  items?: { name: string; link: string }[];
 }
 
 export default function Navbar({ items }: NavbarProps) {
@@ -17,7 +17,7 @@ export default function Navbar({ items }: NavbarProps) {
 
       {/* Enlaces de navegación */}
       <div className="flex items-center space-x-6 px-8 py-2 rounded-full bg-[#333333]">
-        {items.map((item, index) => (
+        {items && items.map((item, index) => (
           item.link.startsWith("#") ? (
             <a
               href={item.link}

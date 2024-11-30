@@ -21,7 +21,9 @@ interface RecentFilesProps {
   gauthTokens: string[];
 }
 
+
 export default function RecentFiles({ gauthTokens }: RecentFilesProps) {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL; // Backend API URL
   const [files, setFiles] = useState<FileData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -30,7 +32,7 @@ export default function RecentFiles({ gauthTokens }: RecentFilesProps) {
     const fetchFiles = async () => {
       try {
         const requests = gauthTokens.map((token) =>
-          axios.get(`http://localhost:3001/dashboard/recentFiles?accessToken=${token}`)
+          axios.get(`${backendUrl}/dashboard/recentFiles?accessToken=${token}`)
         );
 
         const responses = await Promise.all(requests);
