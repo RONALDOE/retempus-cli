@@ -25,6 +25,7 @@ export default function RecentFiles({ gauthTokens }: RecentFilesProps) {
   const [files, setFiles] = useState<FileData[]>([]);
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     const fetchFiles = async () => {
       try {
@@ -41,7 +42,7 @@ export default function RecentFiles({ gauthTokens }: RecentFilesProps) {
             iconLink: file.iconLink,
             webViewLink: file.webViewLink,
             name: file.name,
-            modifiedDate: file.modifiedTime,
+            modifiedTime: file.modifiedTime,
             mimeType: file.mimeType,
             id: file.id,
             accessToken: file.accessToken,
@@ -66,6 +67,7 @@ export default function RecentFiles({ gauthTokens }: RecentFilesProps) {
       fetchFiles();
     }
   }, [gauthTokens]);
+  console.log(files)
 
   if (loading) {
     return <div className="text-center">Loading recent files...</div>;

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Logo from "@assets/RetempusLogo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AuthContext } from "@contexts/auth.context";
-import { faHome, faMagnifyingGlass, faCogs, faTrash, faChevronLeft, faChevronRight, faPowerOff } from "@fortawesome/free-solid-svg-icons";
+import { faHome, faMagnifyingGlass, faCogs, faTrash, faChevronLeft, faChevronRight, faPowerOff , faCloudArrowUp} from "@fortawesome/free-solid-svg-icons";
 
 interface SidebarItem {
   name: string;
@@ -14,6 +14,7 @@ interface SidebarItem {
 const sidebarItems: SidebarItem[] = [
   { name: "Home", link: "/dashboard", icon: <FontAwesomeIcon icon={faHome} /> },
   { name: "Search", link: "/search", icon: <FontAwesomeIcon icon={faMagnifyingGlass} /> },
+  {name: 'Upload', link: '/upload', icon: <FontAwesomeIcon icon={faCloudArrowUp} />},
   { name: "Trash", link: "/trashcan", icon: <FontAwesomeIcon icon={faTrash} /> },
   { name: "Settings", link: "/settings", icon: <FontAwesomeIcon icon={faCogs} /> },
 ];

@@ -267,7 +267,7 @@ export default function Upload() {
       )}
 
       {/* File upload */}
-      <div className="flex flex-row gap-5">
+      <div className="flex flex-row gap-8 justify-center items-center">
         <div className='mt-6 flex flex-col items-center space-y-4'>
           <input
             type='file'
@@ -283,8 +283,6 @@ export default function Upload() {
           </button>
         </div>
         
-        <p>Or</p>
-
         <div className='mt-6 flex flex-col items-center space-y-4'>
         <select
         onChange={(e) => setFileType(e.target.value as string)}

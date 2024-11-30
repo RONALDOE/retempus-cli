@@ -17,7 +17,6 @@ interface FileData {
 
 const FileTile = ({ fileData }: { fileData: FileData }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  console.log(fileData);
 
   // Función para abrir el modal
   const openModal = () => setIsModalOpen(true);

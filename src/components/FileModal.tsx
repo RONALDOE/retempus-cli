@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark, faLink, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { trashFile, deleteFile, untrashFile } from "@utils/helpers";
+import { faXmark, faLink, faTrash, faCloudArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { trashFile, deleteFile, untrashFile, downloadFile  } from "@utils/helpers";
 import { useLocation } from "react-router-dom";
 
 interface FileData {
@@ -60,6 +60,8 @@ const FileModal: React.FC<FileModalProps> = ({
     webViewLink,
     size,
     fileExtension,
+    id,
+    accessToken
   } = fileData;
   const parsedModifiedTime = new Date(modifiedTime).toLocaleString();
 
@@ -116,7 +118,9 @@ const FileModal: React.FC<FileModalProps> = ({
           )}
         </div>
 
-        {/* Close Button */}
+        
+
+        {/* Trash Button */}
         <div className="flex flex-row gap-4 justify-center mt-6 text-xl">
           {isTrashcan ? (
             <button
@@ -135,6 +139,15 @@ const FileModal: React.FC<FileModalProps> = ({
               <FontAwesomeIcon icon={faLink} /> Open
             </a>
           )}
+          {!isTrashcan && (
+          <button
+          onClick={() => downloadFile(id, accessToken, name)}
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+
+        >
+          <FontAwesomeIcon icon={faCloudArrowDown} /> Download
+        </button>
+        )}
           <button
             onClick={handleAction}
             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"

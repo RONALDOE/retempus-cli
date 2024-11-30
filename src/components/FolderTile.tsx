@@ -5,6 +5,7 @@ const FolderTile = ({ folderdata, onClick }: { folderdata: any, onClick: (folder
   // Función para abrir el modal (si lo necesitas)
 
   // Función para cerrar el modal (si lo necesitas)
+  if (folderdata.name.toLowerCase() === "back") return null;
 
   return (
     <div className="border border-gray-200 rounded-lg shadow-md flex flex-col items-center p-4 w-40 h-40 bg-white">

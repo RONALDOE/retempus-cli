@@ -32,12 +32,16 @@ export default function Settings() {
           <DataCard
             key={index}
             tokens={token}
-            canDelete={true}
+            settings={true}
             userId={auth.user?.userId}
           />
         ))}{" "}
-        
-        <div className='w-[20rem]    flex justify-center items-center'>
+
+        {gauthTokens.length < 3 && (
+
+          
+          
+          <div className='w-[20rem]    flex justify-center items-center'>
             <button 
               onClick={async () => {
                 if (auth.user?.userId) {
@@ -50,8 +54,10 @@ export default function Settings() {
                 }
               }}
               className='bg-[#121212] text-[#ffffff] p-2 rounded-lg'
-            > Vincular Cuenta</button>
+              > Vincular Cuenta</button>
           </div>
+            )
+            }
         
       </div>
     </div>
